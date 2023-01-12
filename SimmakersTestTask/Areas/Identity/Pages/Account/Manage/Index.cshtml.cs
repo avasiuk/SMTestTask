@@ -72,29 +72,7 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
-            var avatarName = user.AvatarName;
-
-            if (avatarName != null && user.Avatar != null)
-            {
-                var extension = avatarName.Substring(avatarName.Length - 3, 3);
-
-                string contentType = null;
-                
-                if (extension == "jpg")
-                {
-                    contentType = "image/jpeg";
-                }
-
-                if (extension == "png")
-                {
-                    contentType = "image/png";
-                }
-
-                Avatar = $"data:{contentType};base64," + Convert.ToBase64String(user.Avatar, 0, user.Avatar.Length);
-            } else
-            {
-                Avatar = "/images/DefaultAvatar.jpg";
-            }
+            Avatar = Utils.ImageHtmlHelper.GenerateImageSrc(user.AvatarName, user.Avatar);
 
             Input = new InputModel
             {

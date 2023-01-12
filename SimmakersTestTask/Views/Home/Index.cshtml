@@ -18,6 +18,7 @@
                 <tr>
                     <td><b>Username</b></td>
                     <td><b>Email</b></td>
+                    <td><b>Avatar</b></td>
                 </tr>
             </thead>
             @foreach (var user in Model)
@@ -25,6 +26,7 @@
                 <tr>
                     <td>@user.Username</td>
                     <td>@user.Email</td>
+                    <td><img alt="" src="@user.Avatar" style="height:100px;width:100px;" /></td>
                 </tr>
             }
         </table>

@@ -25,9 +25,8 @@ namespace SimmakersTestTask.Controllers
                 UserId = p.Id,
                 Username = p.UserName,
                 Email = p.Email,
-                Avatar = p.Avatar,
-                AvatarName = p.AvatarName
-            });
+                Avatar = Utils.ImageHtmlHelper.GenerateImageSrc(p.AvatarName, p.Avatar)
+        });
 
             return View(usersInfo);
         }
