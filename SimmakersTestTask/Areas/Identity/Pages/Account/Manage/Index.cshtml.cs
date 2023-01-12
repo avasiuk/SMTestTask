@@ -14,12 +14,12 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -30,6 +30,8 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string Username { get; set; }
+
+        public string Avatar { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -58,14 +60,38 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Avatar")]
+            public IFormFile Avatar { get; set; }
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+
+            var avatarName = user.AvatarName;
+
+            if (avatarName != null && user.Avatar != null)
+            {
+                var extension = avatarName.Substring(avatarName.Length - 3, 3);
+
+                string contentType = null;
+                
+                if (extension == "jpg")
+                {
+                    contentType = "image/jpeg";
+                }
+
+                if (extension == "png")
+                {
+                    contentType = "image/png";
+                }
+
+                Avatar = $"data:{contentType};base64," + Convert.ToBase64String(user.Avatar, 0, user.Avatar.Length);
+            }
 
             Input = new InputModel
             {
@@ -107,6 +133,17 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
                     return RedirectToPage();
+                }
+            }
+
+            if (Input.Avatar != null)
+            {
+                using (var target = new MemoryStream())
+                {
+                    Input.Avatar.CopyTo(target);
+                    user.AvatarName = Input.Avatar.FileName;
+                    user.Avatar = target.ToArray();
+                    await _userManager.UpdateAsync(user);
                 }
             }
 
