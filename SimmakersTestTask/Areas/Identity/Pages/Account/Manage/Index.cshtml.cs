@@ -91,6 +91,9 @@ namespace SimmakersTestTask.Areas.Identity.Pages.Account.Manage
                 }
 
                 Avatar = $"data:{contentType};base64," + Convert.ToBase64String(user.Avatar, 0, user.Avatar.Length);
+            } else
+            {
+                Avatar = "/images/DefaultAvatar.jpg";
             }
 
             Input = new InputModel
